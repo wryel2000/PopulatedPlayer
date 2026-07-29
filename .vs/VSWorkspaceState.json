@@ -1,14 +1,16 @@
 {
   "ExpandedNodes": [
     "",
+    "\\libs",
     "\\src",
     "\\src\\main",
     "\\src\\main\\java",
     "\\src\\main\\java\\com",
     "\\src\\main\\java\\com\\populatedplayer",
+    "\\src\\main\\java\\com\\populatedplayer\\fakeplayer",
     "\\src\\main\\java\\com\\populatedplayer\\ping",
     "\\src\\main\\resources"
   ],
-  "SelectedNode": "\\src\\main\\java\\com\\populatedplayer\\ping",
+  "SelectedNode": "\\src\\main\\java\\com\\populatedplayer\\fakeplayer\\FakePlayerManager.java",
   "PreviewInSolutionExplorer": false
 }

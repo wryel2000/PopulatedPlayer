@@ -20,6 +20,14 @@ commands:
     description: Define alta quantidade de fake players online.
     usage: /noite
     permission: populatedplayer.control
+  zero:
+    description: Remove todos os fake players do TAB e pausa o chat automatico.
+    usage: /zero
+    permission: populatedplayer.control
+  reload:
+    description: Recarrega o config.yml do PopulatedPlayer em tempo real.
+    usage: /reload
+    permission: populatedplayer.control
 permissions:
   populatedplayer.control:
     description: Permite controlar os fake players por período.

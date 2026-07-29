@@ -1,16 +1,21 @@
 package com.populatedplayer.fakeplayer;
 
-import com.mojang.authlib.GameProfile;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.reflect.StructureModifier;
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import com.comphenix.protocol.wrappers.PlayerInfoData;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.populatedplayer.config.PopulatedConfig;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
-import net.minecraft.server.level.ServerPlayer;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,13 +31,15 @@ import java.util.stream.Collectors;
 
 public final class FakePlayerManager {
     private static final String OFFLINE_UUID_PREFIX = "OfflinePlayer:";
+    private static final int FAKE_PLAYER_LATENCY = 0;
 
-    private final Plugin plugin;
+    private final ProtocolManager protocolManager;
     private final Map<String, FakeTabPlayer> onlineFakePlayers = new LinkedHashMap<>();
     private volatile PopulatedConfig config;
 
     public FakePlayerManager(Plugin plugin, PopulatedConfig config) {
-        this.plugin = plugin;
+        // Keep the plugin parameter for the existing construction API; packets are handled entirely by ProtocolLib.
+        this.protocolManager = ProtocolLibrary.getProtocolManager();
         this.config = config;
     }
 
@@ -107,7 +114,7 @@ public final class FakePlayerManager {
 
     private FakeTabPlayer createFakePlayer(String name) {
         UUID uuid = UUID.nameUUIDFromBytes((OFFLINE_UUID_PREFIX + name).getBytes(StandardCharsets.UTF_8));
-        return new FakeTabPlayer(uuid, name, new GameProfile(uuid, name));
+        return new FakeTabPlayer(uuid, name, new WrappedGameProfile(uuid, name));
     }
 
     private boolean isValidPlayerName(String name) {
@@ -125,23 +132,77 @@ public final class FakePlayerManager {
         if (uuids.isEmpty()) {
             return;
         }
-        ClientboundPlayerInfoRemovePacket packet = new ClientboundPlayerInfoRemovePacket(uuids);
+        PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO_REMOVE);
+        packet.getUUIDLists().write(0, uuids);
         Bukkit.getOnlinePlayers().forEach(player -> sendPacket(player, packet));
     }
 
     private void sendAddPacket(Player viewer, List<FakeTabPlayer> fakePlayers) {
-        CraftServer craftServer = (CraftServer) plugin.getServer();
-        List<ServerPlayer> nmsPlayers = fakePlayers.stream()
-                .map(fake -> new ServerPlayer(craftServer.getServer(), ((CraftPlayer) viewer).getHandle().serverLevel(), fake.profile()))
-                .toList();
-        ClientboundPlayerInfoUpdatePacket packet = new ClientboundPlayerInfoUpdatePacket(
-                EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED),
-                nmsPlayers
-        );
+        PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO);
+        packet.getPlayerInfoActions().write(0, EnumSet.of(
+                EnumWrappers.PlayerInfoAction.ADD_PLAYER,
+                EnumWrappers.PlayerInfoAction.UPDATE_LISTED
+        ));
+        writePlayerInfoData(packet, fakePlayers.stream()
+                .map(this::toPlayerInfoData)
+                .toList());
         sendPacket(viewer, packet);
     }
 
-    private void sendPacket(Player player, Object packet) {
-        ((CraftPlayer) player).getHandle().connection.send((net.minecraft.network.protocol.Packet<?>) packet);
+    private PlayerInfoData toPlayerInfoData(FakeTabPlayer fakePlayer) {
+        return createPlayerInfoData(fakePlayer.uuid(), fakePlayer.profile(), WrappedChatComponent.fromText(fakePlayer.name()));
+    }
+
+    private PlayerInfoData createPlayerInfoData(UUID uuid, WrappedGameProfile profile, WrappedChatComponent displayName) {
+        try {
+            Constructor<PlayerInfoData> constructor = PlayerInfoData.class.getConstructor(
+                    UUID.class,
+                    int.class,
+                    boolean.class,
+                    EnumWrappers.NativeGameMode.class,
+                    WrappedGameProfile.class,
+                    WrappedChatComponent.class
+            );
+            return constructor.newInstance(
+                    uuid,
+                    FAKE_PLAYER_LATENCY,
+                    true,
+                    EnumWrappers.NativeGameMode.SURVIVAL,
+                    profile,
+                    displayName
+            );
+        } catch (NoSuchMethodException ignored) {
+            return createLegacyPlayerInfoData(profile, displayName);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException exception) {
+            throw new IllegalStateException("Could not create ProtocolLib player info data for " + profile.getName(), exception);
+        }
+    }
+
+    private PlayerInfoData createLegacyPlayerInfoData(WrappedGameProfile profile, WrappedChatComponent displayName) {
+        try {
+            Constructor<PlayerInfoData> constructor = PlayerInfoData.class.getConstructor(
+                    WrappedGameProfile.class,
+                    int.class,
+                    EnumWrappers.NativeGameMode.class,
+                    WrappedChatComponent.class
+            );
+            return constructor.newInstance(profile, FAKE_PLAYER_LATENCY, EnumWrappers.NativeGameMode.SURVIVAL, displayName);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException exception) {
+            throw new IllegalStateException("Could not create ProtocolLib player info data for " + profile.getName(), exception);
+        }
+    }
+
+    private void writePlayerInfoData(PacketContainer packet, List<PlayerInfoData> playerInfoData) {
+        StructureModifier<List<PlayerInfoData>> lists = packet.getPlayerInfoDataLists();
+        int index = lists.size() > 1 ? 1 : 0;
+        lists.write(index, playerInfoData);
+    }
+
+    private void sendPacket(Player player, PacketContainer packet) {
+        try {
+            protocolManager.sendServerPacket(player, packet);
+        } catch (InvocationTargetException exception) {
+            throw new IllegalStateException("Could not send fake TAB packet to " + player.getName(), exception);
+        }
     }
 }

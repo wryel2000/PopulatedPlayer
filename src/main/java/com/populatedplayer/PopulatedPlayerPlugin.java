@@ -5,7 +5,6 @@ import com.populatedplayer.config.PopulatedConfig;
 import com.populatedplayer.fakeplayer.FakePlayerJoinListener;
 import com.populatedplayer.fakeplayer.FakePlayerManager;
 import com.populatedplayer.message.AutomaticMessageTask;
-import com.populatedplayer.ping.FakePlayerPingListener;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 

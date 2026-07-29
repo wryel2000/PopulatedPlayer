@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -173,7 +172,7 @@ public final class FakePlayerManager {
             );
         } catch (NoSuchMethodException ignored) {
             return createLegacyPlayerInfoData(profile, displayName);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException exception) {
+        } catch (Exception exception) {
             throw new IllegalStateException("Could not create ProtocolLib player info data for " + profile.getName(), exception);
         }
     }
@@ -187,7 +186,7 @@ public final class FakePlayerManager {
                     WrappedChatComponent.class
             );
             return constructor.newInstance(profile, FAKE_PLAYER_LATENCY, EnumWrappers.NativeGameMode.SURVIVAL, displayName);
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException exception) {
+        } catch (Exception exception) {
             throw new IllegalStateException("Could not create ProtocolLib player info data for " + profile.getName(), exception);
         }
     }
@@ -201,7 +200,7 @@ public final class FakePlayerManager {
     private void sendPacket(Player player, PacketContainer packet) {
         try {
             protocolManager.sendServerPacket(player, packet);
-        } catch (InvocationTargetException exception) {
+        } catch (Exception exception) {
             throw new IllegalStateException("Could not send fake TAB packet to " + player.getName(), exception);
         }
     }

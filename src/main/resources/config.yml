@@ -1,0 +1,30 @@
+# Nomes com 3 a 16 caracteres, válidos para o cliente vanilla.
+nomes_permitidos:
+  - SteveBR
+  - MinerLucas
+  - AnaCraft
+  - ForgePlayer
+  - PaperFan
+  - NetherGui
+  - EnderLia
+  - CreeperFox
+  - ModdedLeo
+  - RedstoneMax
+
+quantidades:
+  manha: 5
+  tarde: 20
+  noite: 50
+
+# Intervalo em segundos.
+tempo_intervalo_mensagens: 120
+
+mensagens_automaticas:
+  aleatorio: true
+  jogador_especifico: ""
+  prefixo: "[Membro]"
+  textos:
+    - "alguem vai minerar?"
+    - "tem loja aberta?"
+    - "partiu nether daqui a pouco"
+    - "gg servidor ta cheio hoje"

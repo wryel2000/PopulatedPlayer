@@ -26,7 +26,6 @@ public final class PopulatedPlayerPlugin extends JavaPlugin {
         registerPeriodCommand("tarde", PopulatedConfig::afternoonAmount);
         registerPeriodCommand("noite", PopulatedConfig::nightAmount);
         getServer().getPluginManager().registerEvents(new FakePlayerJoinListener(fakePlayerManager), this);
-        getServer().getPluginManager().registerEvents(new FakePlayerPingListener(fakePlayerManager), this);
 
         automaticMessageTask.restart();
         getLogger().info("PopulatedPlayer habilitado com injeção de fake players apenas no TAB.");

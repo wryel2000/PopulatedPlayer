@@ -3,6 +3,7 @@ package com.populatedplayer.message;
 import com.populatedplayer.config.PopulatedConfig;
 import com.populatedplayer.fakeplayer.FakePlayerManager;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -29,6 +30,10 @@ public final class AutomaticMessageTask {
         task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::sendAutomaticMessage, intervalTicks, intervalTicks);
     }
 
+    public boolean isRunning() {
+        return task != null;
+    }
+
     public void stop() {
         if (task != null) {
             task.cancel();
@@ -43,8 +48,8 @@ public final class AutomaticMessageTask {
         if (messages.isEmpty() || sender.isEmpty()) {
             return;
         }
-        String text = messages.get(ThreadLocalRandom.current().nextInt(messages.size()));
-        String formatted = config.messagePrefix() + " " + sender.get() + ": " + text;
+        String text = messages.get(ThreadLocalRandom.current().nextInt(messages.size())).stripLeading();
+        String formatted = "<" + sender.get() + "> " + ChatColor.translateAlternateColorCodes('&', text);
         Bukkit.getScheduler().runTask(plugin, () -> Bukkit.broadcastMessage(formatted));
     }
 }

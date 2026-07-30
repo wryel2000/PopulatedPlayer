@@ -35,6 +35,7 @@ public final class FakePlayerManager {
     private final ProtocolManager protocolManager;
     private final Map<String, FakeTabPlayer> onlineFakePlayers = new LinkedHashMap<>();
     private volatile PopulatedConfig config;
+    private int targetAmount;
 
     public FakePlayerManager(Plugin plugin, PopulatedConfig config) {
         // Keep the plugin parameter for the existing construction API; packets are handled entirely by ProtocolLib.
@@ -44,10 +45,39 @@ public final class FakePlayerManager {
 
     public synchronized void updateConfig(PopulatedConfig config) {
         this.config = config;
+        this.targetAmount = Math.min(targetAmount, validAvailableNames().size());
+    }
+
+    public synchronized void refreshCurrentTarget() {
+        removePlayersNoLongerAllowed();
+        setTargetAmount(targetAmount);
+    }
+
+    public synchronized int rotateAllPlayers() {
+        int currentTarget = targetAmount;
+        removeRandomPlayers(onlineFakePlayers.size());
+        setTargetAmount(currentTarget);
+        return onlineFakePlayers.size();
+    }
+
+    public synchronized int validNameCount() {
+        return validAvailableNames().size();
+    }
+
+    public synchronized void rotateOnePlayer() {
+        if (targetAmount <= 0 || onlineFakePlayers.isEmpty()) {
+            return;
+        }
+        if (validAvailableNames().stream().noneMatch(name -> !onlineFakePlayers.containsKey(name))) {
+            return;
+        }
+        removeRandomPlayers(1);
+        addRandomPlayers(1);
     }
 
     public synchronized void setTargetAmount(int targetAmount) {
-        int safeTarget = Math.min(Math.max(0, targetAmount), config.allowedNames().size());
+        int safeTarget = Math.min(Math.max(0, targetAmount), validAvailableNames().size());
+        this.targetAmount = safeTarget;
         if (onlineFakePlayers.size() < safeTarget) {
             addRandomPlayers(safeTarget - onlineFakePlayers.size());
             return;
@@ -88,10 +118,8 @@ public final class FakePlayerManager {
     }
 
     private void addRandomPlayers(int amount) {
-        List<String> candidates = config.allowedNames().stream()
-                .filter(this::isValidPlayerName)
+        List<String> candidates = validAvailableNames().stream()
                 .filter(name -> !onlineFakePlayers.containsKey(name))
-                .filter(name -> Bukkit.getPlayerExact(name) == null)
                 .collect(Collectors.toCollection(ArrayList::new));
         Collections.shuffle(candidates, new Random());
 
@@ -114,6 +142,23 @@ public final class FakePlayerManager {
     private FakeTabPlayer createFakePlayer(String name) {
         UUID uuid = UUID.nameUUIDFromBytes((OFFLINE_UUID_PREFIX + name).getBytes(StandardCharsets.UTF_8));
         return new FakeTabPlayer(uuid, name, new WrappedGameProfile(uuid, name));
+    }
+
+    private List<String> validAvailableNames() {
+        return config.allowedNames().stream()
+                .filter(this::isValidPlayerName)
+                .filter(name -> Bukkit.getPlayerExact(name) == null)
+                .distinct()
+                .toList();
+    }
+
+    private void removePlayersNoLongerAllowed() {
+        List<String> validNames = validAvailableNames();
+        List<FakeTabPlayer> removed = onlineFakePlayers.values().stream()
+                .filter(fake -> !validNames.contains(fake.name()))
+                .toList();
+        removed.forEach(fake -> onlineFakePlayers.remove(fake.name()));
+        broadcastRemovePacket(removed.stream().map(FakeTabPlayer::uuid).toList());
     }
 
     private boolean isValidPlayerName(String name) {

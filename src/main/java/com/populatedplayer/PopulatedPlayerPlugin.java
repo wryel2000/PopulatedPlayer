@@ -79,6 +79,14 @@ public final class PopulatedPlayerPlugin extends JavaPlugin {
         tabRotationTask = getServer().getScheduler().runTaskTimer(this, fakePlayerManager::rotateOnePlayer, fiveMinutesTicks, fiveMinutesTicks);
     }
 
+    private void startTabRotationTask() {
+        if (tabRotationTask != null) {
+            tabRotationTask.cancel();
+        }
+        long fiveMinutesTicks = 5L * 60L * 20L;
+        tabRotationTask = getServer().getScheduler().runTaskTimer(this, fakePlayerManager::rotateOnePlayer, fiveMinutesTicks, fiveMinutesTicks);
+    }
+
     private void registerPeriodCommand(String name, java.util.function.ToIntFunction<PopulatedConfig> amountResolver) {
         PluginCommand command = getCommand(name);
         if (command == null) {

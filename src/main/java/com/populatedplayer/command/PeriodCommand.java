@@ -2,6 +2,7 @@ package com.populatedplayer.command;
 
 import com.populatedplayer.config.PopulatedConfig;
 import com.populatedplayer.fakeplayer.FakePlayerManager;
+import com.populatedplayer.message.AutomaticMessageTask;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,17 +15,20 @@ public final class PeriodCommand implements CommandExecutor {
     private final FakePlayerManager fakePlayerManager;
     private final ToIntFunction<PopulatedConfig> amountResolver;
     private final ConfigSupplier configSupplier;
+    private final AutomaticMessageTask automaticMessageTask;
 
-    public PeriodCommand(FakePlayerManager fakePlayerManager, ConfigSupplier configSupplier, ToIntFunction<PopulatedConfig> amountResolver) {
+    public PeriodCommand(FakePlayerManager fakePlayerManager, ConfigSupplier configSupplier, ToIntFunction<PopulatedConfig> amountResolver, AutomaticMessageTask automaticMessageTask) {
         this.fakePlayerManager = fakePlayerManager;
         this.configSupplier = configSupplier;
         this.amountResolver = amountResolver;
+        this.automaticMessageTask = automaticMessageTask;
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         int targetAmount = amountResolver.applyAsInt(configSupplier.get());
         fakePlayerManager.setTargetAmount(targetAmount);
+        automaticMessageTask.restart();
         sender.sendMessage(ChatColor.GREEN + "Fake players ajustados para " + targetAmount + " no período " + label + ".");
         return true;
     }

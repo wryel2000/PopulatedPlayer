@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.reflect.StructureModifier;
 import com.comphenix.protocol.wrappers.WrappedServerPing;
 import com.populatedplayer.fakeplayer.FakePlayerManager;
 import org.bukkit.Bukkit;
@@ -24,16 +23,16 @@ public final class ServerPingPacketListener {
         ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Status.Server.SERVER_INFO) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                StructureModifier<WrappedServerPing> serverPings = event.getPacket().getServerPings();
-                if (serverPings.size() == 0) {
+                if (event.getPacket().getServerPings().size() == 0) {
                     return;
                 }
-                WrappedServerPing ping = serverPings.read(0);
+                WrappedServerPing ping = event.getPacket().getServerPings().read(0);
                 if (ping == null) {
                     return;
                 }
-                ping.setPlayersOnline(Bukkit.getOnlinePlayers().size() + fakePlayerManager.onlineCount());
-                serverPings.write(0, ping);
+                int total = Bukkit.getOnlinePlayers().size() + fakePlayerManager.onlineCount();
+                ping.setPlayersOnline(total);
+                event.getPacket().getServerPings().write(0, ping);
             }
         });
     }

@@ -1,11 +1,14 @@
 package com.populatedplayer;
 
 import com.populatedplayer.command.PeriodCommand;
+import com.populatedplayer.command.ChatMuteCommand;
+import com.populatedplayer.command.GirarCommand;
 import com.populatedplayer.command.PopulatedReloadCommand;
 import com.populatedplayer.command.ZeroCommand;
 import com.populatedplayer.config.PopulatedConfig;
 import com.populatedplayer.fakeplayer.FakePlayerJoinListener;
 import com.populatedplayer.fakeplayer.FakePlayerManager;
+import com.populatedplayer.listener.ServerPingPacketListener;
 import com.populatedplayer.message.AutomaticMessageTask;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,7 +33,10 @@ public final class PopulatedPlayerPlugin extends JavaPlugin {
         registerPeriodCommand("noite", PopulatedConfig::nightAmount);
         registerSimpleCommand("zero", new ZeroCommand(fakePlayerManager, automaticMessageTask));
         registerSimpleCommand("reload", new PopulatedReloadCommand(this));
+        registerSimpleCommand("girar", new GirarCommand(fakePlayerManager));
+        registerSimpleCommand("mutarchat", new ChatMuteCommand(automaticMessageTask));
         getServer().getPluginManager().registerEvents(new FakePlayerJoinListener(fakePlayerManager), this);
+        new ServerPingPacketListener(this, fakePlayerManager).register();
 
         automaticMessageTask.restart();
         startTabRotationTask();
@@ -48,6 +54,10 @@ public final class PopulatedPlayerPlugin extends JavaPlugin {
         }
     }
 
+    public FakePlayerManager fakePlayerManager() {
+        return fakePlayerManager;
+    }
+
     public void reloadLocalConfig() {
         reloadConfig();
         populatedConfig = PopulatedConfig.from(getConfig());
@@ -59,6 +69,14 @@ public final class PopulatedPlayerPlugin extends JavaPlugin {
             automaticMessageTask.restart();
             startTabRotationTask();
         }
+    }
+
+    private void startTabRotationTask() {
+        if (tabRotationTask != null) {
+            tabRotationTask.cancel();
+        }
+        long fiveMinutesTicks = 5L * 60L * 20L;
+        tabRotationTask = getServer().getScheduler().runTaskTimer(this, fakePlayerManager::rotateOnePlayer, fiveMinutesTicks, fiveMinutesTicks);
     }
 
     private void startTabRotationTask() {

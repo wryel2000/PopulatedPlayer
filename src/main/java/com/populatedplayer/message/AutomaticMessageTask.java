@@ -30,6 +30,10 @@ public final class AutomaticMessageTask {
         task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::sendAutomaticMessage, intervalTicks, intervalTicks);
     }
 
+    public boolean isRunning() {
+        return task != null;
+    }
+
     public void stop() {
         if (task != null) {
             task.cancel();

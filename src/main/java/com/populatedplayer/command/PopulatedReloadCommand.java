@@ -17,7 +17,10 @@ public final class PopulatedReloadCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         plugin.reloadLocalConfig();
-        sender.sendMessage(ChatColor.GREEN + "Configuracao do PopulatedPlayer recarregada. Nomes, mensagens e intervalos atualizados em memoria.");
+        int validNameCount = plugin.fakePlayerManager().validNameCount();
+        String message = "Configuracao recarregada. Total de nomes validos carregados: " + validNameCount + ".";
+        plugin.getLogger().info(message);
+        sender.sendMessage(ChatColor.GREEN + message);
         return true;
     }
 }

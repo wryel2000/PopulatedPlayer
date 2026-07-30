@@ -28,6 +28,15 @@ commands:
     description: Recarrega o config.yml do PopulatedPlayer em tempo real.
     usage: /reload
     permission: populatedplayer.control
+  girar:
+    description: Rotaciona todos os fake players atuais por novos nomes aleatorios.
+    usage: /girar
+    permission: populatedplayer.control
+  mutarchat:
+    description: Liga ou desliga as mensagens automaticas dos fake players no chat.
+    usage: /mutarchat
+    aliases: [mutar, mutechat, chatmute]
+    permission: populatedplayer.control
 permissions:
   populatedplayer.control:
     description: Permite controlar os fake players por período.

@@ -53,6 +53,17 @@ public final class FakePlayerManager {
         setTargetAmount(targetAmount);
     }
 
+    public synchronized int rotateAllPlayers() {
+        int currentTarget = targetAmount;
+        removeRandomPlayers(onlineFakePlayers.size());
+        setTargetAmount(currentTarget);
+        return onlineFakePlayers.size();
+    }
+
+    public synchronized int validNameCount() {
+        return validAvailableNames().size();
+    }
+
     public synchronized void rotateOnePlayer() {
         if (targetAmount <= 0 || onlineFakePlayers.isEmpty()) {
             return;

@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\PopulatedPlayer\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\PopulatedPlayer\\src\\main\\java\\com\\populatedplayer\\fakeplayer\\FakePlayerManager.java||{3B902123-F8A7-4915-9F01-361F908088D0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\main\\java\\com\\populatedplayer\\fakeplayer\\FakePlayerManager.java||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\PopulatedPlayer\\src\\main\\java\\com\\populatedplayer\\PopulatedPlayerPlugin.java||{3B902123-F8A7-4915-9F01-361F908088D0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\main\\java\\com\\populatedplayer\\PopulatedPlayerPlugin.java||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\PopulatedPlayer\\src\\main\\java\\com\\populatedplayer\\fakeplayer\\FakePlayerManager.java||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\main\\java\\com\\populatedplayer\\fakeplayer\\FakePlayerManager.java||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\PopulatedPlayer\\build.gradle||{8B382828-6202-11D1-8870-0000F87579D2}",
@@ -26,11 +26,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "FakePlayerManager.java",
               "DocumentMoniker": "C:\\PopulatedPlayer\\src\\main\\java\\com\\populatedplayer\\fakeplayer\\FakePlayerManager.java",
               "RelativeDocumentMoniker": "src\\main\\java\\com\\populatedplayer\\fakeplayer\\FakePlayerManager.java",
@@ -43,15 +43,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "PopulatedPlayerPlugin.java",
               "DocumentMoniker": "C:\\PopulatedPlayer\\src\\main\\java\\com\\populatedplayer\\PopulatedPlayerPlugin.java",
               "RelativeDocumentMoniker": "src\\main\\java\\com\\populatedplayer\\PopulatedPlayerPlugin.java",
               "ToolTip": "C:\\PopulatedPlayer\\src\\main\\java\\com\\populatedplayer\\PopulatedPlayerPlugin.java",
               "RelativeToolTip": "src\\main\\java\\com\\populatedplayer\\PopulatedPlayerPlugin.java",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAAAA0AAAA2AAAAAAAAAA==",
+              "ViewState": "AgIAAEwAAAAAAAAAAAAAAFYAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-07-29T18:53:46.788Z"
+              "WhenOpened": "2026-07-29T18:53:46.788Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -63,7 +64,8 @@
               "RelativeToolTip": "settings.gradle",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-07-29T17:28:35.592Z"
+              "WhenOpened": "2026-07-29T17:28:35.592Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -75,7 +77,8 @@
               "RelativeToolTip": "build.gradle",
               "ViewState": "AgIAAAcAAAAAAAAAAAAwwBYAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2026-07-29T17:25:02.552Z"
+              "WhenOpened": "2026-07-29T17:25:02.552Z",
+              "EditorCaption": ""
             }
           ]
         }

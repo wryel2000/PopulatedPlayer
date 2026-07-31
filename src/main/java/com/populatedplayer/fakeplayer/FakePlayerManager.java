@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -43,12 +44,8 @@ public final class FakePlayerManager {
         this.config = config;
     }
 
-    public synchronized void updateConfig(PopulatedConfig config) {
-        this.config = config;
-        this.targetAmount = Math.min(targetAmount, validAvailableNames().size());
-    }
-
-    public synchronized void refreshCurrentTarget() {
+    public synchronized void onConfigReload(PopulatedConfig newConfig) {
+        this.config = newConfig;
         removePlayersNoLongerAllowed();
         setTargetAmount(targetAmount);
     }
@@ -153,7 +150,7 @@ public final class FakePlayerManager {
     }
 
     private void removePlayersNoLongerAllowed() {
-        List<String> validNames = validAvailableNames();
+        Set<String> validNames = Set.copyOf(validAvailableNames());
         List<FakeTabPlayer> removed = onlineFakePlayers.values().stream()
                 .filter(fake -> !validNames.contains(fake.name()))
                 .toList();

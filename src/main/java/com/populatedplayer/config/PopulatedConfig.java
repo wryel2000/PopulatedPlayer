@@ -17,7 +17,7 @@ public record PopulatedConfig(
 ) {
     public static PopulatedConfig from(FileConfiguration config) {
         return new PopulatedConfig(
-                config.getStringList("nomes_permitidos"),
+                List.copyOf(config.getStringList("nomes_permitidos")),
                 Math.max(0, config.getInt("quantidades.manha", 5)),
                 Math.max(0, config.getInt("quantidades.tarde", 20)),
                 Math.max(0, config.getInt("quantidades.noite", 50)),
@@ -25,7 +25,7 @@ public record PopulatedConfig(
                 config.getBoolean("mensagens_automaticas.aleatorio", true),
                 config.getString("mensagens_automaticas.jogador_especifico", ""),
                 config.getString("mensagens_automaticas.prefixo", "[Membro]"),
-                config.getStringList("mensagens_automaticas.textos")
+                List.copyOf(config.getStringList("mensagens_automaticas.textos"))
         );
     }
 }

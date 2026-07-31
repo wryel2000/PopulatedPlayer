@@ -26,7 +26,8 @@ public final class AutomaticMessageTask {
 
     public void restart() {
         stop();
-        long intervalTicks = configSupplier.get().automaticMessageIntervalSeconds() * 20L;
+        PopulatedConfig currentConfig = configSupplier.get();
+        long intervalTicks = currentConfig.automaticMessageIntervalSeconds() * 20L;
         task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::sendAutomaticMessage, intervalTicks, intervalTicks);
     }
 

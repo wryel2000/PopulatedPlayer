@@ -60,10 +60,11 @@ public final class PopulatedPlayerPlugin extends JavaPlugin {
 
     public void reloadLocalConfig() {
         reloadConfig();
-        populatedConfig = PopulatedConfig.from(getConfig());
+        PopulatedConfig newConfig = PopulatedConfig.from(getConfig());
+        populatedConfig = newConfig;
+
         if (fakePlayerManager != null) {
-            fakePlayerManager.updateConfig(populatedConfig);
-            fakePlayerManager.refreshCurrentTarget();
+            fakePlayerManager.onConfigReload(newConfig);
         }
         if (automaticMessageTask != null) {
             automaticMessageTask.restart();
